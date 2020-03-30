@@ -1,7 +1,26 @@
 .SubBlock {
     width: 23px;
     height: 23px;
-    background-color: red;
     margin: 1px;
     position: absolute;
+}
+
+.I {
+    background-color: #f03a47;
+}
+
+.Square {
+    background-color: #ffb62e;
+}
+
+.S {
+    background-color: #34eb67;
+}
+
+.T {
+    background-color: #2eafff;
+}
+
+.L {
+    background-color: #8434eb;
 }

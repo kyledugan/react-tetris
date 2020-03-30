@@ -2,6 +2,12 @@ import React, { useState, useEffect, useMemo } from 'react';
 import Block from '../components/Blocks/Block';
 import SubBlock from '../components/Blocks/SubBlock';
 
+// TODOS:
+// 1. Detect game over
+// 2. Score system
+// 3. Increase speed after each completed row
+// 4. Add different block colors (done)
+
 const Gameboard = () => {
     const height = Math.floor(window.innerHeight/25);
     const width = Math.floor(window.innerWidth/25);
@@ -21,7 +27,7 @@ const Gameboard = () => {
             }
             // prevent moving into an existing block
             for (const rBlock of restingBlocks) {
-                if (block[0] === rBlock[0] && block[1] === rBlock[1]) {
+                if (block[0] === rBlock.x && block[1] === rBlock.y) {
                     return true;
                 }
             }
@@ -78,7 +84,7 @@ const Gameboard = () => {
         }
     }
 
-    const rotate = () => {
+    const rotateBlock = () => {
         const nextCoords = getCoords(0, 0, 1);
 
         let minX = [width, 0];
@@ -107,9 +113,9 @@ const Gameboard = () => {
             let distToBottom = height - block[1] - 1;
             if (restingBlocks.length) {
                 for (const rBlock of restingBlocks) {
-                    if (rBlock[0] === block[0] && rBlock[1] >= block[1]) {
-                        if (rBlock[1] - block[1] - 1 < distToBottom) {
-                            distToBottom = rBlock[1] - block[1] - 1
+                    if (rBlock.x === block[0] && rBlock.y >= block[1]) {
+                        if (rBlock.y - block[1] - 1 < distToBottom) {
+                            distToBottom = rBlock.y - block[1] - 1
                             
                         }
                     }
@@ -128,7 +134,7 @@ const Gameboard = () => {
         if (event.keyCode === 40) { //down
             moveBlock(getCoords(0, 1, 0), 0, 1, 0);
         } else if (event.keyCode === 38) { //up
-            rotate();
+            rotateBlock();
         } else if (event.keyCode === 37) { //left
             moveBlock(getCoords(-1, 0, 0), -1, 0, 0);
         } else if (event.keyCode === 39) { //right
@@ -138,8 +144,8 @@ const Gameboard = () => {
         }
     }
 
-    const checkRows = coords => {
-        const allBlocks = [...restingBlocks, coords[0], coords[1], coords[2], coords[3]];
+    const checkForCompletedRows = (coords, shape) => {
+        const allBlocks = [...restingBlocks, {shape: shape, x: coords[0][0], y: coords[0][1]}, {shape: shape, x: coords[1][0], y: coords[1][1]}, {shape: shape, x: coords[2][0], y: coords[2][1]}, {shape: shape, x: coords[3][0], y: coords[3][1]}];
 
         let counts = {}
         for (const block of allBlocks) {
@@ -172,8 +178,8 @@ const Gameboard = () => {
     const nextBlock = coords => {
         const newShape = blockTypes[Math.floor(Math.random() * blockTypes.length)];
         setPosition([midPoint, 0, 0])
+        checkForCompletedRows(coords, shape);
         setShape(newShape);
-        checkRows(coords);
     }
 
     // KEY LISTENER
@@ -191,7 +197,7 @@ const Gameboard = () => {
             for (const block of currCoords) {
                 if (!hitBottom) {
                     for (const rBlock of restingBlocks) {
-                        if ((block[0] === rBlock[0] && block[1]+1 === rBlock[1]) || block[1]+1 >= height) {
+                        if ((block[0] === rBlock.x && block[1]+1 === rBlock.y) || block[1]+1 >= height) {
                             nextBlock(currCoords);
                             hitBottom = true;
                             break;
@@ -218,7 +224,7 @@ const Gameboard = () => {
     // }, [yPosition]) //eslint-disable-line
 
     const blockComponents = useMemo(() => restingBlocks.map((block, i) => {
-        return <SubBlock left={block[0]} top={block[1]} key={i} />
+        return <SubBlock left={block.x} top={block.y} key={i} shape={block.shape} />
     }), [restingBlocks]);
 
     return (
