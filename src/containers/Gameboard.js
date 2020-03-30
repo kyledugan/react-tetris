@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Block from '../components/Blocks/Block';
 import SubBlock from '../components/Blocks/SubBlock';
 
@@ -7,12 +7,10 @@ const Gameboard = () => {
     const width = Math.floor(window.innerWidth/25);
     const midPoint = Math.floor(width/2) - 1;
     const blockTypes = ['I', 'T', 'S', 'Square', 'L'];
-    const tickPeriod = 1000;
+    // const tickPeriod = 1000;
 
-    const [xPosition, setXPosition] = useState(midPoint);
-    const [yPosition, setYPosition] = useState(0);
+    const [position, setPosition] = useState([midPoint, 0, 0]) //x, y, rotation
     const [shape, setShape] = useState('I');
-    const [rotations, setRotations] = useState(0);
     const [restingBlocks, setRestingBlocks] = useState([]);
 
     const checkCollision = (nextCoords) => {
@@ -30,10 +28,10 @@ const Gameboard = () => {
         }
     }
 
-    const getCoords = (rotation, xOffset, yOffset) => {
-        const newX = xPosition + xOffset;
-        const newY = yPosition + yOffset;
-        const newR = rotations + rotation;
+    const getCoords = (xOffset, yOffset, rotation) => {
+        const newX = position[0] + xOffset;
+        const newY = position[1] + yOffset;
+        const newR = position[2] + rotation;
         switch (shape) {
             case 'I':
                 if (newR % 2 === 0) {
@@ -74,16 +72,14 @@ const Gameboard = () => {
         }
     }
 
-    const moveBlock = (nextCoords, r, x, y) => {
+    const moveBlock = (nextCoords, x, y, r) => {
         if (!checkCollision(nextCoords)) {
-            setXPosition(xPosition => xPosition + x);
-            setYPosition(yPosition => yPosition + y);
-            setRotations(rotations => rotations + r);
+            setPosition(position => [position[0] + x, position[1] + y, position[2] + r])
         }
     }
 
     const rotate = () => {
-        const nextCoords = getCoords(1, 0, 0);
+        const nextCoords = getCoords(0, 0, 1);
 
         let minX = [width, 0];
         let maxX = [0, 0];
@@ -96,11 +92,11 @@ const Gameboard = () => {
         }
 
         if (minX[0] < 0) {
-            moveBlock(getCoords(1, -minX[0], 0), 1, -minX[0], 0)
+            moveBlock(getCoords(-minX[0], 0, 1), -minX[0], 0, 1)
         } else if (maxX[0] >= width) {
-            moveBlock(getCoords(1, -(maxX[0]-width+1), 0), 1, -(maxX[0]-width+1), 0)
+            moveBlock(getCoords(-(maxX[0]-width+1, 1), 0), -(maxX[0]-width+1), 0, 1)
         } else {
-            moveBlock(nextCoords, 1, 0, 0)
+            moveBlock(nextCoords, 0, 0, 1)
         }
     }
 
@@ -125,18 +121,18 @@ const Gameboard = () => {
                 distance = distToBottom;
             }
         }
-        moveBlock(getCoords(0, 0, distance), 0, 0, distance);
+        moveBlock(getCoords(0, distance, 0), 0, distance, 0);
     }
 
     const keyDownHandler = event => {
         if (event.keyCode === 40) { //down
-            moveBlock(getCoords(0, 0, 1), 0, 0, 1);
+            moveBlock(getCoords(0, 1, 0), 0, 1, 0);
         } else if (event.keyCode === 38) { //up
             rotate();
         } else if (event.keyCode === 37) { //left
-            moveBlock(getCoords(0, -1, 0), 0, -1, 0);
+            moveBlock(getCoords(-1, 0, 0), -1, 0, 0);
         } else if (event.keyCode === 39) { //right
-            moveBlock(getCoords(0, 1, 0), 0, 1, 0);
+            moveBlock(getCoords(1, 0, 0), 1, 0, 0);
         } else if (event.keyCode === 32) {
             moveToBottom();
         }
@@ -175,9 +171,7 @@ const Gameboard = () => {
 
     const nextBlock = coords => {
         const newShape = blockTypes[Math.floor(Math.random() * blockTypes.length)];
-        setRotations(0);
-        setXPosition(midPoint);
-        setYPosition(0);
+        setPosition([midPoint, 0, 0])
         setShape(newShape);
         checkRows(coords);
     }
@@ -216,20 +210,20 @@ const Gameboard = () => {
     })
 
     // GAME INTERVAL
-    useEffect(() => {
-        const interval = setInterval(() => {
-            moveBlock(getCoords(0, 0, 1), 0, 0, 1)
-        }, tickPeriod)
-        return () => clearInterval(interval)
-    }, [yPosition]) //eslint-disable-line
+    // useEffect(() => {
+    //     const interval = setInterval(() => {
+    //         moveBlock(getCoords(0, 1, 0), 0, 1, 0)
+    //     }, tickPeriod)
+    //     return () => clearInterval(interval)
+    // }, [yPosition]) //eslint-disable-line
 
-    const blockComponents = restingBlocks.map((block, i) => {
+    const blockComponents = useMemo(() => restingBlocks.map((block, i) => {
         return <SubBlock left={block[0]} top={block[1]} key={i} />
-    });
+    }), [restingBlocks]);
 
     return (
         <div>
-            <Block shape={shape} left={xPosition} top={yPosition} rotation={rotations} />
+            <Block shape={shape} left={position[0]} top={position[1]} rotation={position[2]} />
             {blockComponents}
         </div>
     );
