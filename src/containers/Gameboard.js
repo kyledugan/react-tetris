@@ -5,22 +5,15 @@ import SubBlock from '../components/Blocks/SubBlock';
 const Gameboard = () => {
     const height = Math.floor(window.innerHeight/25);
     const width = Math.floor(window.innerWidth/25);
-    const blockTypes = ['I'];
+    const midPoint = Math.floor(width/2) - 1;
+    const blockTypes = ['I', 'T', 'S', 'Square', 'L'];
+    const tickPeriod = 1000;
 
-    const [xPosition, setXPosition] = useState(Math.floor(width/2) - 1);
+    const [xPosition, setXPosition] = useState(midPoint);
     const [yPosition, setYPosition] = useState(0);
     const [shape, setShape] = useState('I');
     const [rotations, setRotations] = useState(0);
     const [restingBlocks, setRestingBlocks] = useState([]);
-
-    // TO DO:
-    // 1. Prevent moving into another block (done)
-    // 2. Finish formatting getCoords (done)
-    // 3. Finish rotate logic (done)
-    // 4. Add in timer
-    // 5. Remove complete lines (done)
-    // 6. Reduce rerenders
-    // 7. bug: if you press space when you're underneath a block, it moves to the top of the resting block
 
     const checkCollision = (nextCoords) => {
         for (const block of nextCoords) {
@@ -118,7 +111,7 @@ const Gameboard = () => {
             let distToBottom = height - block[1] - 1;
             if (restingBlocks.length) {
                 for (const rBlock of restingBlocks) {
-                    if (rBlock[0] === block[0]) {
+                    if (rBlock[0] === block[0] && rBlock[1] >= block[1]) {
                         if (rBlock[1] - block[1] - 1 < distToBottom) {
                             distToBottom = rBlock[1] - block[1] - 1
                             
@@ -151,7 +144,6 @@ const Gameboard = () => {
 
     const checkRows = coords => {
         const allBlocks = [...restingBlocks, coords[0], coords[1], coords[2], coords[3]];
-        console.log(allBlocks);
 
         let counts = {}
         for (const block of allBlocks) {
@@ -184,7 +176,7 @@ const Gameboard = () => {
     const nextBlock = coords => {
         const newShape = blockTypes[Math.floor(Math.random() * blockTypes.length)];
         setRotations(0);
-        setXPosition(18);
+        setXPosition(midPoint);
         setYPosition(0);
         setShape(newShape);
         checkRows(coords);
@@ -194,7 +186,7 @@ const Gameboard = () => {
     useEffect(() => {
         document.addEventListener('keydown', keyDownHandler)
         return () => document.removeEventListener('keydown', keyDownHandler);
-    }, [xPosition, yPosition, rotations]) //eslint-disable-line
+    })
 
     // CHECK IF BLOCK HITS THE BOTTOM
     useEffect(() => {
@@ -221,7 +213,15 @@ const Gameboard = () => {
                 }
             }
         }
-    }, [yPosition, xPosition, rotations])
+    })
+
+    // GAME INTERVAL
+    useEffect(() => {
+        const interval = setInterval(() => {
+            moveBlock(getCoords(0, 0, 1), 0, 0, 1)
+        }, tickPeriod)
+        return () => clearInterval(interval)
+    }, [yPosition]) //eslint-disable-line
 
     const blockComponents = restingBlocks.map((block, i) => {
         return <SubBlock left={block[0]} top={block[1]} key={i} />
