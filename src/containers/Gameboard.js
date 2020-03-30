@@ -3,10 +3,11 @@ import Block from '../components/Blocks/Block';
 import SubBlock from '../components/Blocks/SubBlock';
 
 // TODOS:
-// 1. Detect game over
+// 1. Detect game over (done)
 // 2. Score system
 // 3. Increase speed after each completed row
 // 4. Add different block colors (done)
+// 5. Add game over modal
 
 const Gameboard = () => {
     const height = Math.floor(window.innerHeight/25);
@@ -18,6 +19,7 @@ const Gameboard = () => {
     const [position, setPosition] = useState([midPoint, 0, 0]) //x, y, rotation
     const [shape, setShape] = useState('I');
     const [restingBlocks, setRestingBlocks] = useState([]);
+    const [gameOver, setGameOver] = useState(false);
 
     const checkCollision = (nextCoords) => {
         for (const block of nextCoords) {
@@ -175,17 +177,29 @@ const Gameboard = () => {
         setRestingBlocks(allBlocks);
     }
 
-    const nextBlock = coords => {
+    const checkGameOver = coords => {
+        for (const block of coords) {
+            if (block[1] < 1) {
+                setGameOver(true);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    const newBlock = coords => {
         const newShape = blockTypes[Math.floor(Math.random() * blockTypes.length)];
-        setPosition([midPoint, 0, 0])
+        setPosition([midPoint, 0, 0]);
         checkForCompletedRows(coords, shape);
         setShape(newShape);
     }
 
     // KEY LISTENER
     useEffect(() => {
-        document.addEventListener('keydown', keyDownHandler)
-        return () => document.removeEventListener('keydown', keyDownHandler);
+        if (!gameOver) {
+            document.addEventListener('keydown', keyDownHandler)
+            return () => document.removeEventListener('keydown', keyDownHandler);
+        }
     })
 
     // CHECK IF BLOCK HITS THE BOTTOM
@@ -198,7 +212,9 @@ const Gameboard = () => {
                 if (!hitBottom) {
                     for (const rBlock of restingBlocks) {
                         if ((block[0] === rBlock.x && block[1]+1 === rBlock.y) || block[1]+1 >= height) {
-                            nextBlock(currCoords);
+                            if (!checkGameOver(currCoords)) {
+                                newBlock(currCoords);
+                            };
                             hitBottom = true;
                             break;
                         }
@@ -208,7 +224,9 @@ const Gameboard = () => {
         } else {
             for (const block of currCoords) {
                 if (block[1]+1 >= height) {
-                    nextBlock(currCoords);
+                    if (!checkGameOver(currCoords)) {
+                        newBlock(currCoords);
+                    };
                     break;
                 }
             }
