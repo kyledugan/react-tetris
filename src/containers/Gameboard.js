@@ -5,13 +5,12 @@ import SubBlock from '../components/Blocks/SubBlock';
 const Gameboard = () => {
     const height = Math.floor(window.innerHeight/25);
     const width = Math.floor(window.innerWidth/25);
-    const blockTypes = ['T', 'I', 'L', 'S', 'Square'];
+    const blockTypes = ['I'];
 
     const [xPosition, setXPosition] = useState(Math.floor(width/2) - 1);
     const [yPosition, setYPosition] = useState(0);
-    const [shape, setShape] = useState('Square');
+    const [shape, setShape] = useState('I');
     const [rotations, setRotations] = useState(0);
-    const [falling, setFalling] = useState(true);
     const [restingBlocks, setRestingBlocks] = useState([]);
 
     // TO DO:
@@ -19,8 +18,9 @@ const Gameboard = () => {
     // 2. Finish formatting getCoords (done)
     // 3. Finish rotate logic (done)
     // 4. Add in timer
-    // 5. Remove complete lines
+    // 5. Remove complete lines (done)
     // 6. Reduce rerenders
+    // 7. bug: if you press space when you're underneath a block, it moves to the top of the resting block
 
     const checkCollision = (nextCoords) => {
         for (const block of nextCoords) {
@@ -82,7 +82,7 @@ const Gameboard = () => {
     }
 
     const moveBlock = (nextCoords, r, x, y) => {
-        if (falling && !checkCollision(nextCoords)) {
+        if (!checkCollision(nextCoords)) {
             setXPosition(xPosition => xPosition + x);
             setYPosition(yPosition => yPosition + y);
             setRotations(rotations => rotations + r);
@@ -91,9 +91,6 @@ const Gameboard = () => {
 
     const rotate = () => {
         const nextCoords = getCoords(1, 0, 0);
-        if (!falling) {
-            return;
-        }
 
         let minX = [width, 0];
         let maxX = [0, 0];
@@ -152,19 +149,45 @@ const Gameboard = () => {
         }
     }
 
-    const createNewBlock = () => {
+    const checkRows = coords => {
+        const allBlocks = [...restingBlocks, coords[0], coords[1], coords[2], coords[3]];
+        console.log(allBlocks);
+
+        let counts = {}
+        for (const block of allBlocks) {
+            if (block[1] in counts) {
+                counts[block[1]] += 1;
+            } else {
+                counts[block[1]] = 1;
+            }
+        }
+        
+        Object.keys(counts).forEach(row => {
+            if (counts[row] === width) {
+                row = parseInt(row);
+                let count = 0;
+                for (let i = 0; i < allBlocks.length; i++) {
+                    if (allBlocks[i][1] !== row) {
+                        allBlocks[count] = allBlocks[i];
+                        if (allBlocks[count][1] < row) {
+                            allBlocks[count][1] += 1;
+                        }
+                        count++;
+                    } 
+                }
+                allBlocks.length = count;
+            }
+        })
+        setRestingBlocks(allBlocks);
+    }
+
+    const nextBlock = coords => {
         const newShape = blockTypes[Math.floor(Math.random() * blockTypes.length)];
         setRotations(0);
         setXPosition(18);
         setYPosition(0);
         setShape(newShape);
-        setFalling(true);
-    }
-
-    const nextBlock = coords => {
-        setFalling(false);
-        createNewBlock();
-        setRestingBlocks(restingBlocks => [...restingBlocks, coords[0], coords[1], coords[2], coords[3]])
+        checkRows(coords);
     }
 
     // KEY LISTENER
@@ -176,12 +199,17 @@ const Gameboard = () => {
     // CHECK IF BLOCK HITS THE BOTTOM
     useEffect(() => {
         const currCoords = getCoords(0, 0, 0);
-        if (restingBlocks.length > 0) {
+
+        if (restingBlocks.length) {
+            let hitBottom = false;
             for (const block of currCoords) {
-                for (const rBlock of restingBlocks) {
-                    if ((block[0] === rBlock[0] && block[1]+1 === rBlock[1]) || block[1]+1 >= height) {
-                        nextBlock(currCoords);
-                        break;
+                if (!hitBottom) {
+                    for (const rBlock of restingBlocks) {
+                        if ((block[0] === rBlock[0] && block[1]+1 === rBlock[1]) || block[1]+1 >= height) {
+                            nextBlock(currCoords);
+                            hitBottom = true;
+                            break;
+                        }
                     }
                 }
             }
