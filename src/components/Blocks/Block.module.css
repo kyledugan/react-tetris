@@ -1,0 +1,7 @@
+.SubBlock {
+    width: 23px;
+    height: 23px;
+    background-color: red;
+    margin: 1px;
+    position: absolute;
+}
