@@ -1,7 +1,9 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { Fragment, useState, useEffect, useMemo } from 'react';
 import Block from '../components/Blocks/Block';
 import BlockPiece from '../components/Blocks/BlockPiece';
 import Score from '../components/Score/Score';
+import Modal from '../UI/Modal/Modal';
+import HighScores from '../components/HighScores/HighScores';
 
 // TODOS:
 // 1. Detect game over (done)
@@ -11,6 +13,7 @@ import Score from '../components/Score/Score';
 // 5. Add game over modal
 // 6. Fix check completed rows when interval (done)
 // 7. Display score on board (done)
+// 8. Database to track high scores
 
 const Gameboard = () => {
     const height = 20;
@@ -18,11 +21,9 @@ const Gameboard = () => {
     const width = Math.floor(window.innerWidth/pieceSize);
     const midPoint = Math.floor(width/2) - 1;
     const blockTypes = ['I', 'T', 'S', 'Square', 'L'];
-    console.log(pieceSize);
-    console.log(width);
 
     const [position, setPosition] = useState([midPoint, 0, 0]) //x, y, rotation
-    const [shape, setShape] = useState('I');
+    const [shape, setShape] = useState(blockTypes[Math.floor(Math.random() * blockTypes.length)]);
     const [restingBlocks, setRestingBlocks] = useState([]);
     const [gameOver, setGameOver] = useState(false);
     const [tickPeriod, setTickPeriod] = useState(100000);
@@ -139,6 +140,7 @@ const Gameboard = () => {
     }
 
     const keyDownHandler = event => {
+        event.preventDefault();
         if (event.keyCode === 40) { //down
             moveBlock(getCoords(0, 1, 0), 0, 1, 0);
         } else if (event.keyCode === 38) { //up
@@ -197,10 +199,9 @@ const Gameboard = () => {
 
     const newBlock = coords => {
         console.log(score);
-        const newShape = blockTypes[Math.floor(Math.random() * blockTypes.length)];
         setPosition([midPoint, 0, 0]);
         checkForCompletedRows(coords, shape);
-        setShape(newShape);
+        setShape(blockTypes[Math.floor(Math.random() * blockTypes.length)]);
         setScore(score => score + 10);
     }
 
@@ -255,12 +256,25 @@ const Gameboard = () => {
         return <BlockPiece size={pieceSize} left={block.x} top={block.y} key={i} shape={block.shape} />
     }), [restingBlocks, pieceSize]);
 
+    const playAgainHandler = () => {
+        setPosition([midPoint, 0, 0]);
+        setShape(blockTypes[Math.floor(Math.random() * blockTypes.length)]);
+        setRestingBlocks([]);
+        setGameOver(false);
+        setTickPeriod(1000);
+        setScore(0)
+        // debugger;
+    }
+
     return (
-        <div>
+        <Fragment>
+            <Modal show={gameOver} modalClosed={playAgainHandler}>
+                <HighScores />
+            </Modal>
             <Score score={score} />
             <Block shape={shape} size={pieceSize} left={position[0]} top={position[1]} rotation={position[2]} />
             {blockComponents}
-        </div>
+        </Fragment>
     );
 }
 

@@ -1,0 +1,25 @@
+.HighScores {
+    text-align: center;
+}
+
+.Scores {
+    /* margin: auto; */
+    padding: 0;
+    margin: 10px auto;
+    width: 80%;
+}
+
+.Scores li {
+    list-style: none;
+    text-align: left;
+    font-size: 1.5rem;
+    padding: 5px
+}
+
+.Scores li:nth-child(odd) {
+    background-color: #ddd;
+}
+
+.Scores li:nth-child(even) {
+    background-color: #ccc;
+}
