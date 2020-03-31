@@ -4,22 +4,24 @@ import SubBlock from '../components/Blocks/SubBlock';
 
 // TODOS:
 // 1. Detect game over (done)
-// 2. Score system
-// 3. Increase speed after each completed row
+// 2. Score system: 10 points per block and 100 points per finished row
+// 3. Increase speed after each completed row (done)
 // 4. Add different block colors (done)
 // 5. Add game over modal
+// 6. Fix check completed rows when interval (done)
 
 const Gameboard = () => {
     const height = Math.floor(window.innerHeight/25);
     const width = Math.floor(window.innerWidth/25);
     const midPoint = Math.floor(width/2) - 1;
     const blockTypes = ['I', 'T', 'S', 'Square', 'L'];
-    // const tickPeriod = 1000;
 
     const [position, setPosition] = useState([midPoint, 0, 0]) //x, y, rotation
     const [shape, setShape] = useState('I');
     const [restingBlocks, setRestingBlocks] = useState([]);
     const [gameOver, setGameOver] = useState(false);
+    const [tickPeriod, setTickPeriod] = useState(1000);
+    const [score, setScore] = useState(0);
 
     const checkCollision = (nextCoords) => {
         for (const block of nextCoords) {
@@ -118,7 +120,6 @@ const Gameboard = () => {
                     if (rBlock.x === block[0] && rBlock.y >= block[1]) {
                         if (rBlock.y - block[1] - 1 < distToBottom) {
                             distToBottom = rBlock.y - block[1] - 1
-                            
                         }
                     }
                 }
@@ -151,10 +152,10 @@ const Gameboard = () => {
 
         let counts = {}
         for (const block of allBlocks) {
-            if (block[1] in counts) {
-                counts[block[1]] += 1;
+            if (block.y in counts) {
+                counts[block.y] += 1;
             } else {
-                counts[block[1]] = 1;
+                counts[block.y] = 1;
             }
         }
         
@@ -163,15 +164,17 @@ const Gameboard = () => {
                 row = parseInt(row);
                 let count = 0;
                 for (let i = 0; i < allBlocks.length; i++) {
-                    if (allBlocks[i][1] !== row) {
+                    if (allBlocks[i].y !== row) {
                         allBlocks[count] = allBlocks[i];
-                        if (allBlocks[count][1] < row) {
-                            allBlocks[count][1] += 1;
+                        if (allBlocks[count].y < row) {
+                            allBlocks[count].y += 1;
                         }
                         count++;
                     } 
                 }
                 allBlocks.length = count;
+                setTickPeriod(tickPeriod => tickPeriod * 0.9);
+                setScore(score => score + 100);
             }
         })
         setRestingBlocks(allBlocks);
@@ -188,10 +191,12 @@ const Gameboard = () => {
     }
 
     const newBlock = coords => {
+        console.log(score);
         const newShape = blockTypes[Math.floor(Math.random() * blockTypes.length)];
         setPosition([midPoint, 0, 0]);
         checkForCompletedRows(coords, shape);
         setShape(newShape);
+        setScore(score => score + 10);
     }
 
     // KEY LISTENER
@@ -234,12 +239,12 @@ const Gameboard = () => {
     })
 
     // GAME INTERVAL
-    // useEffect(() => {
-    //     const interval = setInterval(() => {
-    //         moveBlock(getCoords(0, 1, 0), 0, 1, 0)
-    //     }, tickPeriod)
-    //     return () => clearInterval(interval)
-    // }, [yPosition]) //eslint-disable-line
+    useEffect(() => {
+        const interval = setInterval(() => {
+            moveBlock(getCoords(0, 1, 0), 0, 1, 0)
+        }, tickPeriod)
+        return () => clearInterval(interval)
+    }, [position[1]]) //eslint-disable-line
 
     const blockComponents = useMemo(() => restingBlocks.map((block, i) => {
         return <SubBlock left={block.x} top={block.y} key={i} shape={block.shape} />
