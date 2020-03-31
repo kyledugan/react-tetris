@@ -1,7 +1,4 @@
-.SubBlock {
-    width: 23px;
-    height: 23px;
-    margin: 1px;
+.BlockPiece {
     position: absolute;
 }
 

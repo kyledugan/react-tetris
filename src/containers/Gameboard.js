@@ -1,26 +1,31 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import Block from '../components/Blocks/Block';
-import SubBlock from '../components/Blocks/SubBlock';
+import BlockPiece from '../components/Blocks/BlockPiece';
+import Score from '../components/Score/Score';
 
 // TODOS:
 // 1. Detect game over (done)
-// 2. Score system: 10 points per block and 100 points per finished row
+// 2. Score system (done)
 // 3. Increase speed after each completed row (done)
 // 4. Add different block colors (done)
 // 5. Add game over modal
 // 6. Fix check completed rows when interval (done)
+// 7. Display score on board (done)
 
 const Gameboard = () => {
-    const height = Math.floor(window.innerHeight/25);
-    const width = Math.floor(window.innerWidth/25);
+    const height = 20;
+    const pieceSize = Math.floor(window.innerHeight/height);
+    const width = Math.floor(window.innerWidth/pieceSize);
     const midPoint = Math.floor(width/2) - 1;
     const blockTypes = ['I', 'T', 'S', 'Square', 'L'];
+    console.log(pieceSize);
+    console.log(width);
 
     const [position, setPosition] = useState([midPoint, 0, 0]) //x, y, rotation
     const [shape, setShape] = useState('I');
     const [restingBlocks, setRestingBlocks] = useState([]);
     const [gameOver, setGameOver] = useState(false);
-    const [tickPeriod, setTickPeriod] = useState(1000);
+    const [tickPeriod, setTickPeriod] = useState(100000);
     const [score, setScore] = useState(0);
 
     const checkCollision = (nextCoords) => {
@@ -182,7 +187,7 @@ const Gameboard = () => {
 
     const checkGameOver = coords => {
         for (const block of coords) {
-            if (block[1] < 1) {
+            if (block[1] < 2) {
                 setGameOver(true);
                 return true;
             }
@@ -247,16 +252,16 @@ const Gameboard = () => {
     }, [position[1]]) //eslint-disable-line
 
     const blockComponents = useMemo(() => restingBlocks.map((block, i) => {
-        return <SubBlock left={block.x} top={block.y} key={i} shape={block.shape} />
-    }), [restingBlocks]);
+        return <BlockPiece size={pieceSize} left={block.x} top={block.y} key={i} shape={block.shape} />
+    }), [restingBlocks, pieceSize]);
 
     return (
         <div>
-            <Block shape={shape} left={position[0]} top={position[1]} rotation={position[2]} />
+            <Score score={score} />
+            <Block shape={shape} size={pieceSize} left={position[0]} top={position[1]} rotation={position[2]} />
             {blockComponents}
         </div>
     );
-    
 }
 
 export default Gameboard;
