@@ -51,7 +51,9 @@ const HighScores = props => {
     })}, [scores, props.score, name, shouldValidate]); //eslint-disable-line
 
     const nameChangedHandler = event => {
-        setName(event.target.value);
+        if (event.target.value.length < 15) {
+            setName(event.target.value);
+        }
     }
 
     const keyUpHandler = event => {
@@ -79,6 +81,7 @@ const HighScores = props => {
     }
 
     const reset = () => {
+
         setScores({});
         setName('');
         setScoreSaved(false);
@@ -87,7 +90,6 @@ const HighScores = props => {
         setShowSaveButton(false);
         props.playAgain();
     }
-
 
     const saveButton = showSaveButton ? (
         <Button 
@@ -99,7 +101,8 @@ const HighScores = props => {
     ) : null;
 
     return (
-        <div className={classes.HighScores}>
+        <div style={{display: props.show ? 'block' : 'none'}} className={classes.HighScores}>
+            <h1>T E T R I S</h1>
             <h2 className={classes.YourScore}>Score: {props.score}</h2>
             <h1 className={classes.Title}>High Scores</h1>
             
@@ -108,7 +111,7 @@ const HighScores = props => {
             </ul>
             
             {saveButton}
-            <Button clicked={reset} type="PlayAgain">PLAY AGAIN</Button>
+            <Button clicked={reset} type="Play">PLAY AGAIN</Button>
         </div>
     );
 }

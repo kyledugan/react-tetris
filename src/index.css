@@ -17,3 +17,8 @@ code {
 body {
   background-color: #eee;
 }
+
+@font-face {
+  font-family: tetris;
+  src: url('./assets/Tetris.otf');
+}

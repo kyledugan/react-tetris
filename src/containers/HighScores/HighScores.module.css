@@ -2,12 +2,22 @@
     text-align: center;
 }
 
+.HighScores h1:nth-of-type(1) {
+    font-family: tetris;
+    font-size: 3rem;
+    color: #3185fc;
+    margin-bottom: 0;
+}
+
+.HighScores h2 {
+    margin-top: 0;
+}
+
 .YourScore {
     font-weight: normal;
 }
 
 .Scores {
-    /* margin: auto; */
     padding: 0;
     margin: 10px auto;
     width: 80%;
@@ -40,6 +50,7 @@
     border: none;
     font-size: 1.5rem;
     background-color: inherit;
+    width: 50%;
 }
 
 .Input:focus {

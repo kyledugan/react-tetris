@@ -3,10 +3,8 @@ import Block from '../components/Blocks/Block';
 import BlockPiece from '../components/Blocks/BlockPiece';
 import Score from '../components/Score/Score';
 import Modal from '../UI/Modal/Modal';
+import Instructions from '../components/Instructions/Instructions'
 import HighScores from './HighScores/HighScores';
-
-// TODOS:
-// 1. Instruction modal
 
 const Gameboard = () => {
     const height = 20;
@@ -16,9 +14,10 @@ const Gameboard = () => {
     const blockTypes = ['I', 'T', 'S', 'Square', 'L'];
 
     const [position, setPosition] = useState([midPoint, 0, 0]) //x, y, rotation
-    const [shape, setShape] = useState(blockTypes[Math.floor(Math.random() * blockTypes.length)]);
+    const [shape, setShape] = useState();
     const [restingBlocks, setRestingBlocks] = useState([]);
     const [gameOver, setGameOver] = useState(false);
+    const [gameStarted, setGameStarted] = useState(false);
     const [tickPeriod, setTickPeriod] = useState(1000);
     const [score, setScore] = useState(0);
 
@@ -224,7 +223,7 @@ const Gameboard = () => {
                     }
                 }
             }
-        } else {
+        } else if (gameStarted) {
             for (const block of currCoords) {
                 if (block[1]+1 >= height) {
                     if (!checkGameOver(currCoords)) {
@@ -238,37 +237,43 @@ const Gameboard = () => {
 
     // GAME INTERVAL
     useEffect(() => {
-        const interval = setInterval(() => {
-            moveBlock(getCoords(0, 1, 0), 0, 1, 0)
-        }, tickPeriod)
-        return () => clearInterval(interval)
-    }, [position[1]]) //eslint-disable-line
+        if (gameStarted) {
+            const interval = setInterval(() => {
+                moveBlock(getCoords(0, 1, 0), 0, 1, 0)
+            }, tickPeriod)
+            return () => clearInterval(interval)
+        }
+    }, [position[1], gameStarted, gameOver]) //eslint-disable-line
 
     const blockComponents = useMemo(() => restingBlocks.map((block, i) => {
         return <BlockPiece size={pieceSize} left={block.x} top={block.y} key={i} shape={block.shape} />
     }), [restingBlocks, pieceSize]);
 
-    const playAgainHandler = () => {
+    const startGameHandler = () => {
         setPosition(position => [midPoint, 0, 0]);
         setShape(shape => blockTypes[Math.floor(Math.random() * blockTypes.length)]);
         setRestingBlocks(restingBlocks => []);
         setGameOver(false);
         setTickPeriod(1000);
         setScore(0)
+        setGameStarted(true);
     }
 
     return (
         <div style={{
+            overflow: 'hidden',
             width: width*pieceSize, 
             height: height*pieceSize,
             backgroundColor: 'white',
+            top: `${(window.innerHeight-(height*pieceSize))/2}px`,
             left: `${(window.innerWidth-(width*pieceSize))/2}px`,
             position: 'fixed'
         }}>
-            <Modal show={gameOver} modalClosed={playAgainHandler}>
-                <HighScores playAgain={playAgainHandler} score={score} />
+            <Modal show={gameOver || !gameStarted} modalClosed={startGameHandler}>
+                <Instructions show={!gameStarted} play={startGameHandler} />
+                <HighScores show={gameOver} playAgain={startGameHandler} score={score} />
             </Modal>
-            <Score score={score} />
+            {gameStarted ? <Score score={score} /> : null }
             <Block shape={shape} size={pieceSize} left={position[0]} top={position[1]} rotation={position[2]} />
             {blockComponents}
         </div>
