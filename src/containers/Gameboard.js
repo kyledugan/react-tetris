@@ -196,7 +196,7 @@ const Gameboard = () => {
 
     const checkGameOver = coords => {
         for (const block of coords) {
-            if (block[1] < 2) {
+            if (block[1] < 1) {
                 setGameOver(true);
                 return true;
             }
