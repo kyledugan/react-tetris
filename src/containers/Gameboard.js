@@ -7,10 +7,6 @@ import Instructions from '../components/Instructions/Instructions'
 import HighScores from './HighScores/HighScores';
 import Pause from '../components/Pause/Pause';
 
-// TO DO
-// 1. Axios error handling
-// 2. Add pause button & modal
-
 const Gameboard = () => {
     const height = 20;
     const pieceSize = Math.floor(window.innerHeight/height);
@@ -139,17 +135,28 @@ const Gameboard = () => {
 
     const keyDownHandler = event => {
         event.preventDefault();
-        if (event.keyCode === 40) { //down
-            moveBlock(getCoords(0, 1, 0), 0, 1, 0);
-        } else if (event.keyCode === 38) { //up
-            rotateBlock();
-        } else if (event.keyCode === 37) { //left
-            moveBlock(getCoords(-1, 0, 0), -1, 0, 0);
-        } else if (event.keyCode === 39) { //right
-            moveBlock(getCoords(1, 0, 0), 1, 0, 0);
-        } else if (event.keyCode === 32) {
-            moveToBottom();
-        } else if (event.keyCode === 80) {
+        if (!paused && gameStarted) {
+            switch(event.keyCode) {
+                case 40: //down
+                    moveBlock(getCoords(0, 1, 0), 0, 1, 0);
+                    break;
+                case 38: //up
+                    rotateBlock();
+                    break;
+                case 37: //left
+                    moveBlock(getCoords(-1, 0, 0), -1, 0, 0);
+                    break;
+                case 39: //right
+                    moveBlock(getCoords(1, 0, 0), 1, 0, 0);
+                    break;
+                case 32: //space
+                    moveToBottom();
+                    break;
+                default:
+                    break;
+            }
+        }
+        if (event.keyCode === 80) {
             setPaused(paused => !paused);
         }
     }
@@ -278,7 +285,7 @@ const Gameboard = () => {
             left: `${(window.innerWidth-(width*pieceSize))/2}px`,
             position: 'fixed'
         }}>
-            <Modal show={gameOver || !gameStarted || paused} modalClosed={startGameHandler}>
+            <Modal show={gameOver || !gameStarted || paused} >
                 <Instructions show={!gameStarted} play={startGameHandler} />
                 <HighScores show={gameOver} playAgain={startGameHandler} score={score} />
                 <Pause show={paused} resume={() => setPaused(false)} />

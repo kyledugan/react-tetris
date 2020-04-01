@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { Fragment, useState, useEffect, useMemo } from 'react';
 import Button from '../../UI/Button/Button';
 import classes from './HighScores.module.css';
 import axios from 'axios';
@@ -10,12 +10,17 @@ const HighScores = props => {
     const [shouldValidate, setShouldValidate] = useState(false);
     const [showSaveButton, setShowSaveButton] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState({type: ''});
 
     const getScores = async () => {
-        const res = await axios.get('https://tetris-dd21a.firebaseio.com/scores.json')
-        if (res.status === 200) {
-            setScores(res.data);
-        }
+        await axios.get('https://tetris-dd21a.firebaseio.com/scores.json')
+            .then(res => {
+                if (res.status === 200) {
+                    setScores(res.data);
+                }
+            }).catch(err => {
+                setError({type: 'get', message: err.message});
+            })
     }
 
     useEffect(() => {
@@ -72,16 +77,20 @@ const HighScores = props => {
         } else {
             setLoading(true);
             const data = {'name': name, 'score': props.score};
-            const res = await axios.post('https://tetris-dd21a.firebaseio.com/scores.json', data);
-            if (res.status === 200) {
-                setScoreSaved(true);
-                setLoading(false);
-            }
+            await axios.post('https://tetris-dd21a.firebaseio.com/scores.jsn', data)
+                .then(res => {
+                    if (res.status === 200) {
+                        setScoreSaved(true);
+                        setLoading(false);
+                    }
+                }).catch(err => {
+                    setLoading(false);
+                    setError({type: 'post', message: err.message});
+                });
         }
     }
 
     const reset = () => {
-
         setScores({});
         setName('');
         setScoreSaved(false);
@@ -104,13 +113,20 @@ const HighScores = props => {
         <div style={{display: props.show ? 'block' : 'none'}} className={classes.HighScores}>
             <h1>T E T R I S</h1>
             <h2 className={classes.YourScore}>Score: {props.score}</h2>
-            <h1 className={classes.Title}>High Scores</h1>
             
-            <ul className={classes.Scores}>
-                {scoreList}
-            </ul>
+            {error.type === 'get' ? <p>Unable to load high scores. {error.message}.</p> : (
+                <Fragment>
+                    <h1 className={classes.Title}>High Scores</h1>
+                    
+                    <ul className={classes.Scores}>
+                        {scoreList}
+                    </ul>
+                </Fragment>
+            )}
+
+            {error.type === 'post' ? <p>Unable to save score. {error.message}.</p> : null}
             
-            {saveButton}
+            {error.type !== 'get' ? saveButton : null}
             <Button clicked={reset} type="Play">PLAY AGAIN</Button>
         </div>
     );
