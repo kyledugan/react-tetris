@@ -9,11 +9,13 @@ const HighScores = props => {
     const [scoreSaved, setScoreSaved] = useState(false);
     const [shouldValidate, setShouldValidate] = useState(false);
     const [showSaveButton, setShowSaveButton] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const getScores = async () => {
-        console.log('getting')
         const res = await axios.get('https://tetris-dd21a.firebaseio.com/scores.json')
-        setScores(res.data);
+        if (res.status === 200) {
+            setScores(res.data);
+        }
     }
 
     useEffect(() => {
@@ -49,18 +51,29 @@ const HighScores = props => {
     })}, [scores, props.score, name, shouldValidate]); //eslint-disable-line
 
     const nameChangedHandler = event => {
-        event.preventDefault();
         setName(event.target.value);
     }
+
+    const keyUpHandler = event => {
+        event.preventDefault();
+    }
+
+    // KEY LISTENER
+    useEffect(() => {
+        document.addEventListener('keyup', keyUpHandler)
+        return () => document.removeEventListener('keyup', keyUpHandler);
+    }, [])
 
     const saveScore = async () => {
         if (name.trim().length === 0) {
             setShouldValidate(true);
         } else {
+            setLoading(true);
             const data = {'name': name, 'score': props.score};
             const res = await axios.post('https://tetris-dd21a.firebaseio.com/scores.json', data);
             if (res.status === 200) {
                 setScoreSaved(true);
+                setLoading(false);
             }
         }
     }
@@ -75,9 +88,10 @@ const HighScores = props => {
         props.playAgain();
     }
 
+
     const saveButton = showSaveButton ? (
         <Button 
-            disabled={scoreSaved} 
+            disabled={scoreSaved || loading} 
             clicked={saveScore} 
             type="Save">
                 {scoreSaved ? 'SAVED' : 'SAVE SCORE'}

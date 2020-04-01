@@ -19,7 +19,7 @@ const Gameboard = () => {
     const [shape, setShape] = useState(blockTypes[Math.floor(Math.random() * blockTypes.length)]);
     const [restingBlocks, setRestingBlocks] = useState([]);
     const [gameOver, setGameOver] = useState(false);
-    const [tickPeriod, setTickPeriod] = useState(100000);
+    const [tickPeriod, setTickPeriod] = useState(1000);
     const [score, setScore] = useState(0);
 
     const checkCollision = (nextCoords) => {
@@ -191,7 +191,6 @@ const Gameboard = () => {
     }
 
     const newBlock = coords => {
-        console.log(score);
         setPosition([midPoint, 0, 0]);
         checkForCompletedRows(coords, shape);
         setShape(blockTypes[Math.floor(Math.random() * blockTypes.length)]);
@@ -250,9 +249,9 @@ const Gameboard = () => {
     }), [restingBlocks, pieceSize]);
 
     const playAgainHandler = () => {
-        setPosition([midPoint, 0, 0]);
-        setShape(blockTypes[Math.floor(Math.random() * blockTypes.length)]);
-        setRestingBlocks([]);
+        setPosition(position => [midPoint, 0, 0]);
+        setShape(shape => blockTypes[Math.floor(Math.random() * blockTypes.length)]);
+        setRestingBlocks(restingBlocks => []);
         setGameOver(false);
         setTickPeriod(1000);
         setScore(0)
