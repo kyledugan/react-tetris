@@ -1,24 +1,17 @@
-import React, { Fragment, useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Block from '../components/Blocks/Block';
 import BlockPiece from '../components/Blocks/BlockPiece';
 import Score from '../components/Score/Score';
 import Modal from '../UI/Modal/Modal';
-import HighScores from '../components/HighScores/HighScores';
+import HighScores from './HighScores/HighScores';
 
 // TODOS:
-// 1. Detect game over (done)
-// 2. Score system (done)
-// 3. Increase speed after each completed row (done)
-// 4. Add different block colors (done)
-// 5. Add game over modal
-// 6. Fix check completed rows when interval (done)
-// 7. Display score on board (done)
-// 8. Database to track high scores
+// 1. Instruction modal
 
 const Gameboard = () => {
     const height = 20;
     const pieceSize = Math.floor(window.innerHeight/height);
-    const width = Math.floor(window.innerWidth/pieceSize);
+    const width = height;
     const midPoint = Math.floor(width/2) - 1;
     const blockTypes = ['I', 'T', 'S', 'Square', 'L'];
 
@@ -263,18 +256,23 @@ const Gameboard = () => {
         setGameOver(false);
         setTickPeriod(1000);
         setScore(0)
-        // debugger;
     }
 
     return (
-        <Fragment>
+        <div style={{
+            width: width*pieceSize, 
+            height: height*pieceSize,
+            backgroundColor: 'white',
+            left: `${(window.innerWidth-(width*pieceSize))/2}px`,
+            position: 'fixed'
+        }}>
             <Modal show={gameOver} modalClosed={playAgainHandler}>
-                <HighScores />
+                <HighScores playAgain={playAgainHandler} score={score} />
             </Modal>
             <Score score={score} />
             <Block shape={shape} size={pieceSize} left={position[0]} top={position[1]} rotation={position[2]} />
             {blockComponents}
-        </Fragment>
+        </div>
     );
 }
 

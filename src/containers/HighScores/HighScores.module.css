@@ -2,18 +2,24 @@
     text-align: center;
 }
 
+.YourScore {
+    font-weight: normal;
+}
+
 .Scores {
     /* margin: auto; */
     padding: 0;
     margin: 10px auto;
     width: 80%;
+    
 }
 
 .Scores li {
     list-style: none;
     text-align: left;
     font-size: 1.5rem;
-    padding: 5px
+    padding: 5px;
+    padding-left: 10%;
 }
 
 .Scores li:nth-child(odd) {
@@ -22,4 +28,20 @@
 
 .Scores li:nth-child(even) {
     background-color: #ccc;
+}
+
+.Points {
+    float: right;
+    margin-right: 10%;
+}
+
+.Input {
+    height: 100%;
+    border: none;
+    font-size: 1.5rem;
+    background-color: inherit;
+}
+
+.Input:focus {
+    outline: none;
 }

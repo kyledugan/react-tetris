@@ -10,7 +10,7 @@ const showAndLoadingAreEqual = (prevProps, nextProps) => {
 const Modal = props => {
     return (
         <Fragment>
-            <Backdrop show={props.show} clicked={props.modalClosed}/>
+            <Backdrop show={props.show} />
             <div 
                 className={classes.Modal}
                 style={{
@@ -18,11 +18,10 @@ const Modal = props => {
                     opacity: props.show? '1' : '0'
                 }}>
                 {props.children}
-                <button onClick={props.modalClosed}>Play Again</button>
+
             </div>
         </Fragment>
     );
 };
 
 export default React.memo(Modal, showAndLoadingAreEqual);
-// export default React.memo(Modal);
