@@ -5,6 +5,11 @@ import Score from '../components/Score/Score';
 import Modal from '../UI/Modal/Modal';
 import Instructions from '../components/Instructions/Instructions'
 import HighScores from './HighScores/HighScores';
+import Pause from '../components/Pause/Pause';
+
+// TO DO
+// 1. Axios error handling
+// 2. Add pause button & modal
 
 const Gameboard = () => {
     const height = 20;
@@ -20,6 +25,7 @@ const Gameboard = () => {
     const [gameStarted, setGameStarted] = useState(false);
     const [tickPeriod, setTickPeriod] = useState(1000);
     const [score, setScore] = useState(0);
+    const [paused, setPaused] = useState(false);
 
     const checkCollision = (nextCoords) => {
         for (const block of nextCoords) {
@@ -143,6 +149,8 @@ const Gameboard = () => {
             moveBlock(getCoords(1, 0, 0), 1, 0, 0);
         } else if (event.keyCode === 32) {
             moveToBottom();
+        } else if (event.keyCode === 80) {
+            setPaused(paused => !paused);
         }
     }
 
@@ -237,13 +245,13 @@ const Gameboard = () => {
 
     // GAME INTERVAL
     useEffect(() => {
-        if (gameStarted) {
+        if (gameStarted && !paused) {
             const interval = setInterval(() => {
                 moveBlock(getCoords(0, 1, 0), 0, 1, 0)
             }, tickPeriod)
             return () => clearInterval(interval)
         }
-    }, [position[1], gameStarted, gameOver]) //eslint-disable-line
+    }, [position[1], gameStarted, gameOver, paused]) //eslint-disable-line
 
     const blockComponents = useMemo(() => restingBlocks.map((block, i) => {
         return <BlockPiece size={pieceSize} left={block.x} top={block.y} key={i} shape={block.shape} />
@@ -256,6 +264,7 @@ const Gameboard = () => {
         setGameOver(false);
         setTickPeriod(1000);
         setScore(0)
+        setPaused(false);
         setGameStarted(true);
     }
 
@@ -269,9 +278,10 @@ const Gameboard = () => {
             left: `${(window.innerWidth-(width*pieceSize))/2}px`,
             position: 'fixed'
         }}>
-            <Modal show={gameOver || !gameStarted} modalClosed={startGameHandler}>
+            <Modal show={gameOver || !gameStarted || paused} modalClosed={startGameHandler}>
                 <Instructions show={!gameStarted} play={startGameHandler} />
                 <HighScores show={gameOver} playAgain={startGameHandler} score={score} />
+                <Pause show={paused} resume={() => setPaused(false)} />
             </Modal>
             {gameStarted ? <Score score={score} /> : null }
             <Block shape={shape} size={pieceSize} left={position[0]} top={position[1]} rotation={position[2]} />

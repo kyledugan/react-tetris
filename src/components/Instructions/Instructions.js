@@ -4,6 +4,7 @@ import { faCaretSquareUp, faCaretSquareDown, faCaretSquareLeft, faCaretSquareRig
 import Button from '../../UI/Button/Button';
 import classes from './Instructions.module.css';
 import spacebarLogo from '../../assets/space-bar-png-16.png'
+import pLogo from '../../assets/p-key.png';
 
 const Instructions = props => {
     return (
@@ -26,8 +27,12 @@ const Instructions = props => {
                 <p>Move down</p>
             </div>
             <div className={classes.Instruction}>
-                <img src={spacebarLogo} alt='spacebar'></img>
+                <img src={spacebarLogo} alt='Spacebar Key'></img>
                 <p>Move to bottom</p>
+            </div>
+            <div className={classes.Instruction}>
+                <img src={pLogo} alt='P Key'></img>
+                <p>Pause</p>
             </div>
             <Button clicked={props.play} type='Play'>PLAY</Button>
         </div>

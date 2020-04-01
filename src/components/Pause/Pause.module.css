@@ -1,0 +1,10 @@
+.Pause {
+    text-align: center;
+}
+
+.Pause h1 {
+    font-family: tetris;
+    font-size: 3rem;
+    color: #3185fc;
+    margin-bottom: 0;
+}
