@@ -19,6 +19,12 @@
     color: #f02d3a;
 }
 
+.Pause {
+    color: #f02d3a;
+    float: left;
+    margin: 20px;
+}
+
 .Save {
     color: #16db93;
 }

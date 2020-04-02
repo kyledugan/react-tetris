@@ -3,6 +3,7 @@ import Block from '../components/Blocks/Block';
 import BlockPiece from '../components/Blocks/BlockPiece';
 import Score from '../components/Score/Score';
 import Modal from '../UI/Modal/Modal';
+import Button from '../UI/Button/Button';
 import Instructions from '../components/Instructions/Instructions'
 import HighScores from './HighScores/HighScores';
 import Pause from '../components/Pause/Pause';
@@ -290,7 +291,8 @@ const Gameboard = () => {
                 <HighScores show={gameOver} playAgain={startGameHandler} score={score} />
                 <Pause show={paused} resume={() => setPaused(false)} />
             </Modal>
-            {gameStarted ? <Score score={score} /> : null }
+            {!paused && gameStarted ? <Button clicked={() => setPaused(true)} type='Pause'>Pause</Button> : null}
+            {gameStarted ? <Score score={score} /> : null}
             <Block shape={shape} size={pieceSize} left={position[0]} top={position[1]} rotation={position[2]} />
             {blockComponents}
         </div>
