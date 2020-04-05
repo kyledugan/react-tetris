@@ -291,7 +291,7 @@ const Gameboard = () => {
                 <HighScores show={gameOver} playAgain={startGameHandler} score={score} />
                 <Pause show={paused} resume={() => setPaused(false)} />
             </Modal>
-            {!paused && gameStarted ? <Button clicked={() => setPaused(true)} type='Pause'>Pause</Button> : null}
+            {!paused && gameStarted ? <Button clicked={() => setPaused(true)} type='Pause'>PAUSE</Button> : null}
             {gameStarted ? <Score score={score} /> : null}
             <Block shape={shape} size={pieceSize} left={position[0]} top={position[1]} rotation={position[2]} />
             {blockComponents}
