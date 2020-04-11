@@ -77,7 +77,7 @@ const HighScores = props => {
         } else {
             setLoading(true);
             const data = {'name': name, 'score': props.score};
-            await axios.post('https://tetris-dd21a.firebaseio.com/scores.jsn', data)
+            await axios.post('https://tetris-dd21a.firebaseio.com/scores.json', data)
                 .then(res => {
                     if (res.status === 200) {
                         setScoreSaved(true);
