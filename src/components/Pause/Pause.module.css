@@ -8,3 +8,9 @@
     color: #3185fc;
     margin-bottom: 0;
 }
+
+@media (max-width: 500px) {
+    .Pause h1 {
+        font-size: 2rem;
+    }
+}

@@ -163,21 +163,23 @@ const Gameboard = () => {
         }
     }
 
-    const swipeHandler = (x, y) => {
-        if (x === 0 && y === 0) {
-            rotateBlock();
-        } else if (Math.abs(x) < 30 && Math.abs(y) < 30) {
+    const swipeHandler = (x0, y0, dx, dy) => {
+        if (dx === 0 && dy === 0) {
+            if (x0 > 120 || y0 > 80) { // prevents rotate when clicking Pause
+                rotateBlock();
+            }
+        } else if (Math.abs(dx) < 30 && Math.abs(dy) < 30) {
             return; // too short
-        } else if (Math.abs(x) / Math.abs(y) > 0.67 && Math.abs(x) / Math.abs(y) < 1.5) {
+        } else if (Math.abs(dx) / Math.abs(dy) > 0.67 && Math.abs(dx) / Math.abs(dy) < 1.5) {
             return; // diagonal swipe 
-        } else if (Math.abs(x) > Math.abs(y)) {
-            if (x < 0) { // left 
+        } else if (Math.abs(dx) > Math.abs(dy)) {
+            if (dx < 0) { // left 
                 moveBlock(getCoords(-1, 0, 0), -1, 0, 0);
             } else { // right
                 moveBlock(getCoords(1, 0, 0), 1, 0, 0);
             }
         } else {
-            if (y > 0) { // down
+            if (dy > 0) { // down
                 moveToBottom();
             }
         }
@@ -190,7 +192,8 @@ const Gameboard = () => {
 
     const touchEndHandler = e => {
         const touchObj = e.changedTouches[0];
-        swipeHandler(touchObj.clientX - swipeStart[0], touchObj.clientY - swipeStart[1]);
+        const [x0, y0] = swipeStart;
+        swipeHandler(x0, y0, touchObj.clientX - x0, touchObj.clientY - y0);
         setSwipeStart([]);
     }
 
@@ -253,14 +256,14 @@ const Gameboard = () => {
     })
 
     useEffect(() => {
-        if (gameStarted && !gameOver) {
+        if (gameStarted && !paused && !gameOver) {
             document.addEventListener('touchstart', touchStartHandler);
             return () => document.removeEventListener('touchstart', touchStartHandler);
         }
     })
 
     useEffect(() => {
-        if (gameStarted && !gameOver) {
+        if (gameStarted && !paused && !gameOver) {
             document.addEventListener('touchend', touchEndHandler);
             return () => document.removeEventListener('touchend', touchEndHandler);
         }
@@ -312,9 +315,9 @@ const Gameboard = () => {
     }), [restingBlocks, pieceSize]);
 
     const startGameHandler = () => {
-        setPosition(position => [midPoint, 0, 0]);
-        setShape(shape => blockTypes[Math.floor(Math.random() * blockTypes.length)]);
-        setRestingBlocks(restingBlocks => []);
+        setPosition([midPoint, 0, 0]);
+        setShape(blockTypes[Math.floor(Math.random() * blockTypes.length)]);
+        setRestingBlocks([]);
         setGameOver(false);
         setTickPeriod(1000);
         setScore(0)
