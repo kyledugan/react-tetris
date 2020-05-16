@@ -25,7 +25,7 @@ const HighScores = props => {
 
     useEffect(() => {
         getScores();
-    }, [])
+    }, [scoreSaved])
 
     let sortedScores = [];
     for (let score in scores) {
@@ -71,12 +71,12 @@ const HighScores = props => {
         return () => document.removeEventListener('keyup', keyUpHandler);
     }, [])
 
-    const saveScore = async () => {
-        if (name.trim().length === 0) {
+    const saveScore = async defaultName => {
+        if (name.trim().length === 0 && !defaultName) {
             setShouldValidate(true);
         } else {
             setLoading(true);
-            const data = {'name': name, 'score': props.score};
+            const data = {'name': name.length ? name : defaultName, 'score': props.score};
             await axios.post('https://tetris-dd21a.firebaseio.com/scores.json', data)
                 .then(res => {
                     if (res.status === 200) {
@@ -130,9 +130,10 @@ const HighScores = props => {
             <Button clicked={() => {
                 if (!scoreSaved) {
                     if (!name.trim().length) {
-                        setName('???');
+                        saveScore('???')
+                    } else {
+                        saveScore();
                     }
-                    saveScore();
                 }
                 reset();
                 }} type="Play">PLAY AGAIN</Button>
