@@ -56,3 +56,9 @@
 .Input:focus {
     outline: none;
 }
+
+@media (max-width: 500px) {
+    .HighScores h1:nth-of-type(1) {
+        font-size: 2rem;
+    }
+}
