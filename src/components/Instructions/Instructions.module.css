@@ -29,8 +29,18 @@
 }
 
 .Icon {
-    margin: 0 10px;
+    margin: 10px;
     font-size: 2.5rem;
+}
+
+.TouchInstructions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 5px solid black;
+    border-radius: 30px;
+    height: 100%;
+    flex-wrap: wrap;
 }
 
 @media (max-width: 500px) {

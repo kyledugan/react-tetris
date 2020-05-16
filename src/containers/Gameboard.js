@@ -168,7 +168,7 @@ const Gameboard = () => {
             if (x0 < window.innerWidth * .25 && y0 > 80) { // left quarter of screen
                 moveBlock(getCoords(-1, 0, 0), -1, 0, 0);
             } else if (x0 > window.innerWidth * .75 && y0 > 80) { // right quarter of screen
-                moveBlock(getCoords(1, 0, 0), 1, 0, 0); // move right
+                moveBlock(getCoords(1, 0, 0), 1, 0, 0); 
             } else if (y0 > 80) { // prevents rotating when tapping Pause button
                 rotateBlock();
             }
