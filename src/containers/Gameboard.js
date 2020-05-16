@@ -23,6 +23,7 @@ const Gameboard = () => {
     const [tickPeriod, setTickPeriod] = useState(1000);
     const [score, setScore] = useState(0);
     const [paused, setPaused] = useState(false);
+    const [swipeStart, setSwipeStart] = useState([]);
 
     const checkCollision = (nextCoords) => {
         for (const block of nextCoords) {
@@ -162,6 +163,37 @@ const Gameboard = () => {
         }
     }
 
+    const swipeHandler = (x, y) => {
+        if (x === 0 && y === 0) {
+            rotateBlock();
+        } else if (Math.abs(x) < 30 && Math.abs(y) < 30) {
+            return; // too short
+        } else if (Math.abs(x) / Math.abs(y) > 0.67 && Math.abs(x) / Math.abs(y) < 1.5) {
+            return; // diagonal swipe 
+        } else if (Math.abs(x) > Math.abs(y)) {
+            if (x < 0) { // left 
+                moveBlock(getCoords(-1, 0, 0), -1, 0, 0);
+            } else { // right
+                moveBlock(getCoords(1, 0, 0), 1, 0, 0);
+            }
+        } else {
+            if (y > 0) { // down
+                moveToBottom();
+            }
+        }
+    }
+
+    const touchStartHandler = e => {
+        const touchObj = e.changedTouches[0];
+        setSwipeStart([touchObj.clientX, touchObj.clientY]);
+    }
+
+    const touchEndHandler = e => {
+        const touchObj = e.changedTouches[0];
+        swipeHandler(touchObj.clientX - swipeStart[0], touchObj.clientY - swipeStart[1]);
+        setSwipeStart([]);
+    }
+
     const checkForCompletedRows = (coords, shape) => {
         const allBlocks = [...restingBlocks, {shape: shape, x: coords[0][0], y: coords[0][1]}, {shape: shape, x: coords[1][0], y: coords[1][1]}, {shape: shape, x: coords[2][0], y: coords[2][1]}, {shape: shape, x: coords[3][0], y: coords[3][1]}];
 
@@ -215,8 +247,22 @@ const Gameboard = () => {
     // KEY LISTENER
     useEffect(() => {
         if (!gameOver) {
-            document.addEventListener('keydown', keyDownHandler)
+            document.addEventListener('keydown', keyDownHandler);
             return () => document.removeEventListener('keydown', keyDownHandler);
+        }
+    })
+
+    useEffect(() => {
+        if (gameStarted && !gameOver) {
+            document.addEventListener('touchstart', touchStartHandler);
+            return () => document.removeEventListener('touchstart', touchStartHandler);
+        }
+    })
+
+    useEffect(() => {
+        if (gameStarted && !gameOver) {
+            document.addEventListener('touchend', touchEndHandler);
+            return () => document.removeEventListener('touchend', touchEndHandler);
         }
     })
 
