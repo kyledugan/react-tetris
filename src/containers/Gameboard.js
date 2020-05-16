@@ -163,9 +163,13 @@ const Gameboard = () => {
         }
     }
 
-    const swipeHandler = (x0, y0, dx, dy) => {
+    const touchHandler = (x0, y0, dx, dy) => {
         if (dx === 0 && dy === 0) {
-            if (x0 > 120 || y0 > 80) { // prevents rotate when clicking Pause
+            if (x0 < window.innerWidth * .25 && y0 > 80) { // left quarter of screen
+                moveBlock(getCoords(-1, 0, 0), -1, 0, 0);
+            } else if (x0 > window.innerWidth * .75 && y0 > 80) { // right quarter of screen
+                moveBlock(getCoords(1, 0, 0), 1, 0, 0); // move right
+            } else if (y0 > 80) { // prevents rotating when tapping Pause button
                 rotateBlock();
             }
         } else if (Math.abs(dx) < 30 && Math.abs(dy) < 30) {
@@ -173,13 +177,13 @@ const Gameboard = () => {
         } else if (Math.abs(dx) / Math.abs(dy) > 0.67 && Math.abs(dx) / Math.abs(dy) < 1.5) {
             return; // diagonal swipe 
         } else if (Math.abs(dx) > Math.abs(dy)) {
-            if (dx < 0) { // left 
+            if (dx < 0) { // left swipe
                 moveBlock(getCoords(-1, 0, 0), -1, 0, 0);
-            } else { // right
+            } else { // right swipe
                 moveBlock(getCoords(1, 0, 0), 1, 0, 0);
             }
         } else {
-            if (dy > 0) { // down
+            if (dy > 0) { // down swipe
                 moveToBottom();
             }
         }
@@ -193,7 +197,7 @@ const Gameboard = () => {
     const touchEndHandler = e => {
         const touchObj = e.changedTouches[0];
         const [x0, y0] = swipeStart;
-        swipeHandler(x0, y0, touchObj.clientX - x0, touchObj.clientY - y0);
+        touchHandler(x0, y0, touchObj.clientX - x0, touchObj.clientY - y0);
         setSwipeStart([]);
     }
 
