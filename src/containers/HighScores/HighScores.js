@@ -127,7 +127,15 @@ const HighScores = props => {
             {error.type === 'post' ? <p>Unable to save score. {error.message}.</p> : null}
             
             {error.type !== 'get' ? saveButton : null}
-            <Button clicked={reset} type="Play">PLAY AGAIN</Button>
+            <Button clicked={() => {
+                if (!scoreSaved) {
+                    if (!name.trim().length) {
+                        setName('???');
+                    }
+                    saveScore();
+                }
+                reset();
+                }} type="Play">PLAY AGAIN</Button>
         </div>
     );
 }
