@@ -11,7 +11,7 @@ import Pause from '../components/Pause/Pause';
 const Gameboard = () => {
     const height = 20;
     const pieceSize = Math.floor(window.innerHeight/height);
-    const width = height;
+    const width = Math.min(height, Math.floor(window.innerWidth/pieceSize));
     const midPoint = Math.floor(width/2) - 1;
     const blockTypes = ['I', 'T', 'S', 'Square', 'L'];
 
