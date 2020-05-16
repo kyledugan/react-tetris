@@ -22,9 +22,15 @@
 .Pause {
     color: #f02d3a;
     float: left;
-    margin: 20px;
+    margin: 10px !important;
 }
 
 .Save {
     color: #16db93;
+}
+
+@media (max-width: 500px) {
+    .Button {
+        margin: 0;
+    }
 }

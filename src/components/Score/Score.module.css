@@ -3,3 +3,10 @@
     text-align: right;
     font-size: 2rem;
 }
+
+@media (max-width: 500px) {
+    .Score {
+        margin: 10px;
+    }
+
+}

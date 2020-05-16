@@ -46,7 +46,7 @@ const HighScores = props => {
             if (i < 10) {
                 if (score[0] === '') {
                     setShowSaveButton(true);
-                    return <li key={i}>{i+1}. <input style={inputStyle} className={classes.Input} placeholder="Name" value={name} onChange={event => nameChangedHandler(event)}></input> <span className={classes.Points}>{score[1]}</span></li>
+                    return <li className={classes.Outline} key={i}>{i+1}. <input style={inputStyle} className={classes.Input} placeholder="Name" value={name} onChange={event => nameChangedHandler(event)}></input> <span className={classes.Points}>{score[1]}</span></li>
                 } else {
                     return <li key={i}>{i+1}. {score[0]} <span className={classes.Points}>{score[1]}</span></li>;
                 }

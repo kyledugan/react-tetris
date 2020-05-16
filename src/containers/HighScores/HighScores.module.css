@@ -21,7 +21,6 @@
     padding: 0;
     margin: 10px auto;
     width: 80%;
-    
 }
 
 .Scores li {
@@ -57,8 +56,29 @@
     outline: none;
 }
 
+.Outline {
+    border: 1px solid #f02d3a;
+}
+
 @media (max-width: 500px) {
     .HighScores h1:nth-of-type(1) {
         font-size: 2rem;
+    }
+
+    .Scores {
+        width: 100%;
+    }
+
+    .Scores li, .Input {
+        font-size: 1.2rem;
+    }
+
+    .Title {
+        font-size: 1.7rem;
+        margin: 10px auto;
+    }
+
+    .YourScore {
+        margin: 10px auto;
     }
 }
