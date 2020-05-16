@@ -14,33 +14,25 @@ if ('ontouchstart' in window) { // touchscreen instructions
             <h1>T E T R I S</h1>
             <div className={classes.TouchInstructions} style={{height: window.innerHeight * 0.7}}>
                 <div style={{width: '24%', borderRight: '1px solid gray'}}>
-                    Tap / Swipe
-                    <br/>
+                    <p>Tap / Swipe</p>
                     <FontAwesomeIcon className={classes.Icon} icon={faArrowLeft} />
-                    <br/>
-                    Move Left
+                    <p>Move Left</p>
                 </div>
-                
                 <div style={{width: '50%'}}>
-                    Tap
-                    <br/>
+                    <p>Tap</p>
                     <FontAwesomeIcon className={classes.Icon} icon={faSync} />
-                    <br/>
-                    Rotate
+                    <p>Rotate</p>
                 </div>
                 <div style={{width: '24%', borderLeft: '1px solid gray'}}>
-                    Tap / Swipe
-                    <br/>
+                    <p>Tap / Swipe</p>
                     <FontAwesomeIcon className={classes.Icon} icon={faArrowRight} />
                     <br/>
-                    Move Right
+                    <p>Move Right</p>
                 </div>
                 <div style={{width: '100%'}}>
-                    Swipe
-                    <br/>
+                    <p>Swipe</p>
                     <FontAwesomeIcon className={classes.Icon} icon={faArrowDown} />
-                    <br/>
-                    Move to Bottom
+                    <p>Move to Bototm</p>
                 </div>
             </div>
         </Fragment>

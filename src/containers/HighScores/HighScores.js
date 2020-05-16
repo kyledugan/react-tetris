@@ -72,7 +72,7 @@ const HighScores = props => {
     }, [])
 
     const saveScore = async defaultName => {
-        if (name.trim().length === 0 && !defaultName) {
+        if (name.trim().length === 0 && !defaultName.length) {
             setShouldValidate(true);
         } else {
             setLoading(true);

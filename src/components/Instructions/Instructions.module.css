@@ -43,6 +43,10 @@
     flex-wrap: wrap;
 }
 
+.TouchInstructions p {
+    padding: 5px;
+}
+
 @media (max-width: 500px) {
     .Instructions h1 {
         font-size: 2rem;
