@@ -11,7 +11,6 @@ let instructions;
 if ('ontouchstart' in window) { // touchscreen instructions
     instructions = (
         <Fragment>
-            <h1>T E T R I S</h1>
             <div className={classes.TouchInstructions} style={{height: window.innerHeight * 0.7}}>
                 <div style={{width: '24%', borderRight: '1px solid gray'}}>
                     <p>Tap / Swipe</p>
@@ -32,7 +31,7 @@ if ('ontouchstart' in window) { // touchscreen instructions
                 <div style={{width: '100%'}}>
                     <p>Swipe</p>
                     <FontAwesomeIcon className={classes.Icon} icon={faArrowDown} />
-                    <p>Move to Bototm</p>
+                    <p>Move to bottom</p>
                 </div>
             </div>
         </Fragment>
@@ -40,7 +39,6 @@ if ('ontouchstart' in window) { // touchscreen instructions
 } else { // keyboard instructions
     instructions = (
         <Fragment>
-            <h1>T E T R I S</h1>
             <div className={classes.Instruction}>
                 <FontAwesomeIcon className={classes.Icon} icon={faCaretSquareUp} />
                 <p>Rotate</p>
@@ -72,8 +70,9 @@ if ('ontouchstart' in window) { // touchscreen instructions
 const Instructions = props => {
     return (
         <div style={{display: props.show ? 'block' : 'none'}} className={classes.Instructions}>
+            <h1>T E T R I S</h1>
+            <Button className={classes.PlayButton} clicked={props.play} type='Play'>PLAY</Button>
             { instructions }
-            <Button clicked={props.play} type='Play'>PLAY</Button>
         </div>
     )
 }
