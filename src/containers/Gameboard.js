@@ -214,7 +214,7 @@ const Gameboard = () => {
         }
         
         Object.keys(counts).forEach(row => {
-            if (counts[row] === width) {
+            if (counts[row] >= width) {
                 row = parseInt(row);
                 let count = 0;
                 for (let i = 0; i < allBlocks.length; i++) {
