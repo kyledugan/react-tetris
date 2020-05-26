@@ -1,4 +1,4 @@
-Project avilable at [tetris-kd.s3-website.us-east-2.amazonaws.com](http://tetris-kd.s3-website.us-east-2.amazonaws.com) (desktop only).
+Project avilable at [tetris-kd.s3-website.us-east-2.amazonaws.com](http://tetris-kd.s3-website.us-east-2.amazonaws.com) for mobile and desktop.
 
 ## Available Scripts
 
