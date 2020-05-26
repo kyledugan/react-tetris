@@ -12,7 +12,7 @@ const Gameboard = () => {
     const height = 20;
     const pieceSize = Math.floor(window.innerHeight/height);
     const width = Math.min(height, Math.floor(window.innerWidth/pieceSize));
-    const midPoint = Math.floor(width/2) - 1;
+    const midPoint = Math.ceil(width/2) - 1;
     const blockTypes = ['I', 'T', 'S', 'Square', 'L'];
 
     const [position, setPosition] = useState([midPoint, 0, 0]) //x, y, rotation
